@@ -1,0 +1,18 @@
+version: "3.8"
+services:
+  mariadb:
+    hostname: mariadb
+    image: mariadb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: xtools
+
+  php:
+    user: ${UID:-1000}:${GID:-1000}
+    hostname: php8.2-fpm
+    build: .
+    ports:
+      - "8000:80"
+    depends_on: 
+      - mariadb

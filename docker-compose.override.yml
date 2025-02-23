@@ -1,0 +1,30 @@
+version: "3.8"
+services:
+  traefik:
+    image: traefik:v2.5
+    command:
+      - --providers.docker
+      - --entryPoints.web.address=:80
+      - --entryPoints.websecure.address=:443
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  adminer:
+    image: adminer
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.adminer.rule=Host(`adminer.localhost`)
+      - traefik.http.routers.adminer.entryPoints=web
+    depends_on:
+      - mariadb
+
+  php:
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.app.rule=Host(`xtools.localhost`)
+      - traefik.http.routers.app.entryPoints=web
+    volumes:
+      - .:/var/www/xtools
